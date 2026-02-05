@@ -1,0 +1,90 @@
+{
+  "description": "Prezzi OMI 2024 - €/mq per provincia/comune/categoria",
+  "source": "Agenzia delle Entrate - OMI",
+  "prices": [
+    {
+      "provincia": "RM",
+      "comune": "ROMA",
+      "categoria": "A/2",
+      "pricePerSqm": 3500,
+      "note": "Abitazione civile - zona semicentrale"
+    },
+    {
+      "provincia": "RM",
+      "comune": "ROMA",
+      "categoria": "A/3",
+      "pricePerSqm": 2800,
+      "note": "Abitazione economica"
+    },
+    {
+      "provincia": "RM",
+      "comune": "ROMA",
+      "categoria": "A/7",
+      "pricePerSqm": 4200,
+      "note": "Villino"
+    },
+    {
+      "provincia": "MI",
+      "comune": "MILANO",
+      "categoria": "A/2",
+      "pricePerSqm": 4500,
+      "note": "Abitazione civile"
+    },
+    {
+      "provincia": "MI",
+      "comune": "MILANO",
+      "categoria": "A/3",
+      "pricePerSqm": 3200,
+      "note": "Abitazione economica"
+    },
+    {
+      "provincia": "NA",
+      "comune": "NAPOLI",
+      "categoria": "A/2",
+      "pricePerSqm": 2200,
+      "note": "Abitazione civile"
+    },
+    {
+      "provincia": "NA",
+      "comune": "NAPOLI",
+      "categoria": "A/3",
+      "pricePerSqm": 1800,
+      "note": "Abitazione economica"
+    },
+    {
+      "provincia": "FI",
+      "comune": "FIRENZE",
+      "categoria": "A/2",
+      "pricePerSqm": 3800,
+      "note": "Abitazione civile"
+    },
+    {
+      "provincia": "FI",
+      "comune": "FIRENZE",
+      "categoria": "A/7",
+      "pricePerSqm": 4500,
+      "note": "Villino"
+    },
+    {
+      "provincia": "TO",
+      "comune": "TORINO",
+      "categoria": "A/2",
+      "pricePerSqm": 2000,
+      "note": "Abitazione civile"
+    },
+    {
+      "provincia": "TO",
+      "comune": "TORINO",
+      "categoria": "A/3",
+      "pricePerSqm": 1500,
+      "note": "Abitazione economica"
+    },
+    {
+      "provincia": "BO",
+      "comune": "BOLOGNA",
+      "categoria": "A/2",
+      "pricePerSqm": 3200,
+      "note": "Abitazione civile"
+    }
+  ]
+}

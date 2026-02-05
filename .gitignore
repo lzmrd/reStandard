@@ -1,0 +1,24 @@
+# Foundry 
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/.env
+
+#Node 
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env
+
+#General
+.env
+.DS-Store
+*.log
+
+# IDE 
+.vscode/
+.idea/
+
+ARCHITECTURE.md
+PROGRESS.md
+CLAUDE.md
