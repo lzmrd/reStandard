@@ -3,7 +3,7 @@
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt   } from "wagmi";
 import { parseEther, formatEther, keccak256, toBytes } from "viem";
 import { ADDRESSES } from "@/abi/addresses";
-import { arcTestnet } from "@/lib/chains";
+import { sepolia } from "viem/chains";
 // ABI minimali — solo le funzioni che usiamo
 const PropertyRegistryABI = [
   {
@@ -215,7 +215,7 @@ export function useRegisterProperty() {
         const proofHash = keccak256(toBytes(proofData));
 
         writeContract({
-            address: ADDRESSES.arcTestnet.propertyRegistry,
+            address: ADDRESSES.sepolia.propertyRegistry,
             abi: PropertyRegistryABI,
             functionName: "registerProperty",
             args: [foglio, particella, subalterno, categoria, comune, provincia, proofHash],
@@ -226,22 +226,22 @@ export function useRegisterProperty() {
 
 export function useProperty(propertyId: bigint | undefined) {
     return useReadContract({
-        address: ADDRESSES.arcTestnet.propertyRegistry,
+        address: ADDRESSES.sepolia.propertyRegistry,
         abi: PropertyRegistryABI,
         functionName: "getProperty",
-        args: propertyId ? [propertyId] : undefined,
-        chainId: arcTestnet.id,
-        query: {enabled: !!propertyId },
+        args: propertyId !== undefined ? [propertyId] : undefined,
+        chainId: sepolia.id,
+        query: {enabled: propertyId !== undefined },
     });
 }
 
 export function useOwnerProperties(owner: `0x${string}` | undefined){
     return useReadContract({
-        address: ADDRESSES.arcTestnet.propertyRegistry,
+        address: ADDRESSES.sepolia.propertyRegistry,
         abi: PropertyRegistryABI,
         functionName: "getOwnerPropertyIds",
         args: owner ? [owner] : undefined,
-        chainId: arcTestnet.id,
+        chainId: sepolia.id,
         query: {enabled: !!owner },
     });
 }
@@ -254,7 +254,7 @@ export function useOpenVault() {
 
     const openVault = (propertyId: bigint ) => {
         writeContract({
-            address: ADDRESSES.arcTestnet.vaultManager,
+            address: ADDRESSES.sepolia.vaultManager,
             abi: VaultManagerABI,
             functionName: "openVault",
             args: [propertyId] ,
@@ -269,7 +269,7 @@ export function useMint() {
 
     const mint = (vaultId: bigint, amount: string) =>{
       writeContract({
-      address: ADDRESSES.arcTestnet.vaultManager,
+      address: ADDRESSES.sepolia.vaultManager,
       abi: VaultManagerABI,
       functionName: "mint",
       args: [vaultId, parseEther(amount)],
@@ -284,7 +284,7 @@ export function useBurn() {
 
     const burn = (vaultId: bigint, amount: string) => {
         writeContract({
-        address: ADDRESSES.arcTestnet.vaultManager,
+        address: ADDRESSES.sepolia.vaultManager,
         abi: VaultManagerABI,
         functionName: "burn",
         args: [vaultId, parseEther(amount)],
@@ -301,7 +301,7 @@ export function useInitiateRecall() {
 
     const initiateRecall = (vaultId: bigint) => {
         writeContract({
-            address: ADDRESSES.arcTestnet.vaultManager,
+            address: ADDRESSES.sepolia.vaultManager,
             abi: VaultManagerABI,
             functionName: "initiateRecall",
             args: [vaultId],
@@ -313,7 +313,7 @@ export function useInitiateRecall() {
 
 export function useVault(vaultId: bigint | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.vaultManager,
+    address: ADDRESSES.sepolia.vaultManager,
     abi: VaultManagerABI,
     functionName: "getVault",
     args: vaultId ? [vaultId] : undefined,
@@ -323,7 +323,7 @@ export function useVault(vaultId: bigint | undefined) {
 
 export function useOwnerVaults(owner: `0x${string}` | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.vaultManager,
+    address: ADDRESSES.sepolia.vaultManager,
     abi: VaultManagerABI,
     functionName: "getOwnerVaultIds",
     args: owner ? [owner] : undefined,
@@ -333,7 +333,7 @@ export function useOwnerVaults(owner: `0x${string}` | undefined) {
 
 export function useAvailableToMint(vaultId: bigint | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.vaultManager,
+    address: ADDRESSES.sepolia.vaultManager,
     abi: VaultManagerABI,
     functionName: "getAvailableToMint",
     args: vaultId ? [vaultId] : undefined,
@@ -343,7 +343,7 @@ export function useAvailableToMint(vaultId: bigint | undefined) {
 
 export function useCollateralRatio(vaultId: bigint | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.vaultManager,
+    address: ADDRESSES.sepolia.vaultManager,
     abi: VaultManagerABI,
     functionName: "getCollateralRatio",
     args: vaultId ? [vaultId] : undefined,
@@ -353,7 +353,7 @@ export function useCollateralRatio(vaultId: bigint | undefined) {
 
 export function useIsHealthy(vaultId: bigint | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.vaultManager,
+    address: ADDRESSES.sepolia.vaultManager,
     abi: VaultManagerABI,
     functionName: "isHealthy",
     args: vaultId ? [vaultId] : undefined,
@@ -365,7 +365,7 @@ export function useIsHealthy(vaultId: bigint | undefined) {
 
 export function useResdBalance(address: `0x${string}` | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.resd,
+    address: ADDRESSES.sepolia.resd,
     abi: ERC20ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
@@ -377,7 +377,7 @@ export function useResdBalance(address: `0x${string}` | undefined) {
 
 export function useUsdcBalance(address: `0x${string}` | undefined) {
   return useReadContract({
-    address: ADDRESSES.arcTestnet.usdc,
+    address: ADDRESSES.sepolia.usdc,
     abi: ERC20ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
@@ -391,10 +391,10 @@ export function useApproveUsdc() {
 
   const approve = (amount: bigint) => {
     writeContract({
-      address: ADDRESSES.arcTestnet.usdc,
+      address: ADDRESSES.sepolia.usdc,
       abi: ERC20ABI,
       functionName: "approve",
-      args: [ADDRESSES.arcTestnet.vaultManager, amount],
+      args: [ADDRESSES.sepolia.vaultManager, amount],
     });
   };
 
@@ -427,7 +427,7 @@ name: "getPropertyValue",
   ] as const;
 
   return useReadContract({
-    address: ADDRESSES.arcTestnet.priceOracle,
+    address: ADDRESSES.sepolia.priceOracle,
     abi: PriceOracleABI,
     functionName: "getPropertyValue",
     args: provincia && comune && categoria

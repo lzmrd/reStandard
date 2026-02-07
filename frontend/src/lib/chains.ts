@@ -1,25 +1,7 @@
-import { defineChain } from "viem";
+// Re-export sepolia per compatibilità con i file esistenti
+import { sepolia } from "viem/chains";
 
-// Per ora usiamo Base Sepolia come fallback (Circle Arc non pubblico)
-// Aggiornare con RPC Arc quando disponibile
-export const arcTestnet = defineChain({
-  id: 84532, // Base Sepolia
-  name: "Base Sepolia",
-  nativeCurrency: {
-    name: "ETH",
-    symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://sepolia.base.org"],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: "Basescan",
-      url: "https://sepolia.basescan.org",
-    },
-  },
-  testnet: true,
-});
+export const targetChain = sepolia;
+
+// Alias per retrocompatibilità (da rimuovere in futuro)
+export const arcTestnet = sepolia;

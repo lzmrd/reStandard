@@ -24,7 +24,7 @@ export default function RegisterPage() {
   // Mock proof hash
   const [proofHash, setProofHash] = useState<`0x${string}` | null>(null);
   
-  const { register, isPending, isSuccess, error } = useRegisterProperty();
+  const { register, isPending, isConfirming, isSuccess, error } = useRegisterProperty();
 
   // Aggiorna step quando wallet si connette
   useEffect(() => {
@@ -294,12 +294,24 @@ export default function RegisterPage() {
               
               <button
                 onClick={handleSubmit}
-                disabled={isPending || !register}
+                disabled={isPending || isConfirming || !register}
                 className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
               >
-                {isPending ? "Registrazione in corso..." : "Registra On-Chain"}
+                {isPending ? "Firma in corso..." 
+                : isConfirming
+                  ? "Conferma della transazione..."
+                  : "Resgistra On-Chain"
+                }
+
               </button>
-              
+              {isConfirming && (
+                <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-blue-700 text-sm text-center">
+                    ⏳ Transazione inviata, attendo conferma on-chain...
+                  </p>
+                </div>
+              )}
+
               <button
                 onClick={() => setStep("proof")}
                 disabled={isPending}

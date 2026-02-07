@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createWalletClient, createPublicClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { baseSepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 import { ADDRESSES } from "@/abi/addresses";
 
 const PropertyRegistryABI = [
@@ -62,19 +62,19 @@ export async function POST(request: NextRequest) {
 
     // Create clients
     const publicClient = createPublicClient({
-      chain: baseSepolia,
-      transport: http("https://sepolia.base.org"),
+      chain: sepolia,
+      transport: http("https://ethereum-sepolia-rpc.publicnode.com"),
     });
 
     const walletClient = createWalletClient({
       account,
-      chain: baseSepolia,
-      transport: http("https://sepolia.base.org"),
+      chain: sepolia,
+      transport: http("https://ethereum-sepolia-rpc.publicnode.com"),
     });
 
     // 1. Fetch property data (simulate checking the proof)
     const property = await publicClient.readContract({
-      address: ADDRESSES.arcTestnet.propertyRegistry,
+      address: ADDRESSES.sepolia.propertyRegistry,
       abi: PropertyRegistryABI,
       functionName: "getProperty",
       args: [BigInt(propertyId)],
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
 
     // 3. Call verifyProperty on-chain
     const hash = await walletClient.writeContract({
-      address: ADDRESSES.arcTestnet.propertyRegistry,
+      address: ADDRESSES.sepolia.propertyRegistry,
       abi: PropertyRegistryABI,
       functionName: "verifyProperty",
       args: [BigInt(propertyId)],

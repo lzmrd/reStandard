@@ -1,10 +1,10 @@
 export const ADDRESSES = {
-  arcTestnet: {
-    resd: "0x0Ebf4D83b9Aa7B87eEE241200490473721fCDAcf" as `0x${string}`,
-    propertyRegistry: "0xD7ABeaa7B02169D09bDF4BC8514A37dD9FCC0c79" as `0x${string}`,
-    vaultManager: "0x22776DeC12Ad94d8189464EA207cd58d854F2e0b" as `0x${string}`,
-    priceOracle: "0x75FfC777Eb4992663C6cF33d94728ec3FbD6a224" as `0x${string}`,
-    usdc: "0x036CbD53842c5426634e7929541eC2318f3dCF7e" as `0x${string}`,
+  sepolia: {
+    resd: "0x710E9965C9f60236188b29C4A9086EAC73540B20" as `0x${string}`,
+    propertyRegistry: "0x8Ca32A6e75B21f8090c1ea498b5D3CDE9179c169" as `0x${string}`,
+    priceOracle: "0xAf4d629BA2aBf7A60e0229641C2CD4412Ad46af1" as `0x${string}`,
+    vaultManager: "0x0Ebf4D83b9Aa7B87eEE241200490473721fCDAcf" as `0x${string}`,
+    usdc: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238" as `0x${string}`,
   },
   circleGateway: {
     wallet: "0x0077777d7EBA4688BDeF3E311b846F25870A19B9" as `0x${string}`,
