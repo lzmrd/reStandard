@@ -105,13 +105,6 @@ export default function Dashboard() {
             </div>
           )}
         </section>
-                {/* Circle Gateway Section */}
-        <section className="mt-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Circle Gateway</h2>
-          <div className="max-w-md">
-            <CircleGateway />
-          </div>
-        </section>
       </main>
     </div>
   );

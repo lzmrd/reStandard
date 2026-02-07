@@ -295,6 +295,21 @@ export function useBurn() {
 
 }
 
+export function useInitiateRecall() {
+    const { writeContract, data: hash, isPending, error } = useWriteContract();
+    const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
+
+    const initiateRecall = (vaultId: bigint) => {
+        writeContract({
+            address: ADDRESSES.arcTestnet.vaultManager,
+            abi: VaultManagerABI,
+            functionName: "initiateRecall",
+            args: [vaultId],
+        });
+    };
+
+    return { initiateRecall, hash, isPending, isConfirming, isSuccess, error };
+}
 
 export function useVault(vaultId: bigint | undefined) {
   return useReadContract({

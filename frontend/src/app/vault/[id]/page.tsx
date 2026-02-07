@@ -1,31 +1,77 @@
+// frontend/src/app/vault/[id]/page.tsx
 "use client";
 
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useAccount } from "wagmi";
 import { Header } from "@/components/Header";
 import { HealthIndicator } from "@/components/HealthIndicator";
 import { MintBurnForm } from "@/components/MintBurnForm";
-import { useVault, useProperty } from "@/hooks/useContracts";
+import { 
+  useVault, 
+  useProperty, 
+  useResdBalance, 
+  useInitiateRecall, 
+  useApproveUsdc,
+  formatEther 
+} from "@/hooks/useContracts";
 import { formatUnits } from "viem";
 import { AddressDisplay } from "@/components/AddressDisplay";
-
-// Tipi per i dati del contratto
-type VaultData = readonly [bigint, `0x${string}`, bigint, number, bigint];
-type PropertyData = readonly [`0x${string}`, string, string, string, string, string, string, `0x${string}`, bigint, boolean];
 
 export default function VaultDetailPage() {
   const params = useParams();
   const vaultId = BigInt(params.id as string);
   const { address } = useAccount();
-  
-  const { data: vaultRaw, isLoading: vaultLoading } = useVault(vaultId);
-  const vault = vaultRaw as VaultData | undefined;
-  
-  const propertyId = vault ? vault[0] : BigInt(0);
-  const { data: propertyRaw, isLoading: propertyLoading } = useProperty(propertyId);
-  const property = propertyRaw as PropertyData | undefined;
+
+  // Recall initiation
+  const { initiateRecall, isPending: recallPending, isSuccess: recallSuccess } = useInitiateRecall();
+  const { approve: approveUsdc, isPending: approvePending, isSuccess: approveSuccess } = useApproveUsdc();
+  const [recallStep, setRecallStep] = useState<'idle' | 'approving' | 'initiating'>('idle');
+
+  const { data: vault, isLoading: vaultLoading } = useVault(vaultId);
+  const propertyId = vault ? vault.PropertyId : BigInt(0);
+  const { data: property, isLoading: propertyLoading } = useProperty(propertyId);
+  const { data: resdBalance } = useResdBalance(address);
 
   const isLoading = vaultLoading || propertyLoading;
+
+  // Derived values (only when vault is loaded)
+  const owner = vault?.owner ?? "0x0000000000000000000000000000000000000000";
+  const debt = vault?.debt ?? BigInt(0);
+  const status = vault?.status ?? 0;
+  const createdAt = vault?.createdAt ?? BigInt(0);
+
+  const isOwner = address?.toLowerCase() === owner.toLowerCase();
+  const debtFormatted = formatUnits(debt, 18);
+
+  // Calculate required USDC for recall: debt + 2%, converted to 6 decimals
+  const requiredUsdc = debt > BigInt(0) 
+    ? ((debt * BigInt(102)) / BigInt(100)) / BigInt(1e12)
+    : BigInt(0);
+
+  const handleInitiateRecall = async () => {
+    if (requiredUsdc === BigInt(0)) return;
+    setRecallStep('approving');
+    approveUsdc(requiredUsdc);
+  };
+
+  // Effect to continue recall after approval
+  useEffect(() => {
+    if (approveSuccess && recallStep === 'approving') {
+      setRecallStep('initiating');
+      initiateRecall(vaultId);
+    }
+  }, [approveSuccess, recallStep, vaultId, initiateRecall]);
+
+  useEffect(() => {
+    if (recallSuccess) {
+      setRecallStep('idle');
+    }
+  }, [recallSuccess]);
+
+  const statusLabels = ["Active", "In Recall", "Closed"];
+  const statusColors = ["bg-green-100 text-green-800", "bg-yellow-100 text-yellow-800", "bg-gray-100 text-gray-800"];
+  const mockRatio = debt > BigInt(0) ? 18500 : 0;
 
   if (isLoading) {
     return (
@@ -41,7 +87,7 @@ export default function VaultDetailPage() {
     );
   }
 
-  if (!vault || vault[1] === "0x0000000000000000000000000000000000000000") {
+  if (!vault || vault.owner === "0x0000000000000000000000000000000000000000") {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
@@ -58,26 +104,10 @@ export default function VaultDetailPage() {
     );
   }
 
-  // Destructure vault data: [PropertyId, owner, debt, status, createdAt]
-  const owner = vault[1];
-  const debt = vault[2];
-  const status = vault[3];
-  const createdAt = vault[4];
-  
-  const isOwner = address?.toLowerCase() === owner.toLowerCase();
-  const debtFormatted = formatUnits(debt, 18);
-  
-  // Status: 0 = Active, 1 = InRecall, 2 = Closed
-  const statusLabels = ["Active", "In Recall", "Closed"];
-  const statusColors = ["bg-green-100 text-green-800", "bg-yellow-100 text-yellow-800", "bg-gray-100 text-gray-800"];
-
-  // Mock collateral ratio (in produzione verrebbe da getCollateralRatio)
-  const mockRatio = debt > BigInt(0) ? 18500 : 0;
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -98,13 +128,13 @@ export default function VaultDetailPage() {
             {/* Vault Stats */}
             <div className="bg-white rounded-xl shadow-sm border p-6">
               <h2 className="text-lg font-semibold mb-4">Statistiche Vault</h2>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-500">Debito Totale</p>
                   <p className="text-2xl font-bold">{Number(debtFormatted).toLocaleString()} RESD</p>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-500">Collateral Ratio</p>
                   <div className="flex items-center gap-2">
@@ -112,12 +142,12 @@ export default function VaultDetailPage() {
                     <HealthIndicator ratio={mockRatio} />
                   </div>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-500">Property ID</p>
                   <p className="text-lg font-medium">#{propertyId.toString()}</p>
                 </div>
-                
+
                 <div>
                   <p className="text-sm text-gray-500">Creato il</p>
                   <p className="text-lg font-medium">
@@ -131,47 +161,41 @@ export default function VaultDetailPage() {
             {property && (
               <div className="bg-white rounded-xl shadow-sm border p-6">
                 <h2 className="text-lg font-semibold mb-4">Proprietà Collaterale</h2>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Ubicazione</p>
-                    <p className="font-medium">{property[5]} ({property[6]})</p>
+                    <p className="font-medium">{property.comune} ({property.provincia})</p>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm text-gray-500">Categoria</p>
-                    <p className="font-medium">{property[4]}</p>
+                    <p className="font-medium">{property.categoria}</p>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm text-gray-500">Identificativi Catastali</p>
                     <p className="font-medium">
-                      Foglio {property[1]}, Part. {property[2]}, Sub. {property[3] || "N/A"}
+                      Foglio {property.foglio}, Part. {property.particella}, Sub. {property.subalterno || "N/A"}
                     </p>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm text-gray-500">Valore Stimato</p>
-                    <p className="font-medium text-green-600">
-                      ~€170,000
-                    </p>
+                    <p className="font-medium text-green-600">~€170,000</p>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Recall Section (solo se InRecall) */}
+            {/* Recall Info (quando in recall) */}
             {status === 1 && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                <h2 className="text-lg font-semibold mb-4 text-yellow-800">
-                  Recall in Corso
-                </h2>
+                <h2 className="text-lg font-semibold text-yellow-800 mb-4">Recall in Corso</h2>
                 <p className="text-yellow-700 mb-4">
-                  Il proprietario ha avviato il recall. Gli holder RESD possono 
-                  riscuotere USDC con un premium decrescente.
+                  Il vault è in fase di recall. Gli holder di RESD possono riscattare i loro token per USDC.
                 </p>
-                
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div className="bg-white rounded-lg p-3">
                     <p className="text-xs text-gray-500">Settimana 1</p>
                     <p className="font-bold text-green-600">1.02 USDC/RESD</p>
@@ -185,12 +209,6 @@ export default function VaultDetailPage() {
                     <p className="font-bold text-gray-600">1.00 USDC/RESD</p>
                   </div>
                 </div>
-                
-                {!isOwner && (
-                  <button className="w-full py-3 bg-yellow-600 text-white rounded-lg font-medium hover:bg-yellow-700">
-                    Riscuoti USDC
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -210,11 +228,24 @@ export default function VaultDetailPage() {
               <div className="bg-white rounded-xl shadow-sm border p-6">
                 <h2 className="text-lg font-semibold mb-4">Recall</h2>
                 <p className="text-sm text-gray-600 mb-4">
-                  Avvia il recall per riacquistare tutti i RESD in circolazione 
-                  depositando USDC (debito + 2% premium).
+                  Avvia il recall per riacquistare tutti i RESD in circolazione.
                 </p>
-                <button className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700">
-                  Avvia Recall
+                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                  <p className="text-xs text-gray-500">USDC Richiesti (debito + 2%)</p>
+                  <p className="font-bold text-lg">{Number(formatUnits(requiredUsdc, 6)).toLocaleString()} USDC</p>
+                </div>
+                <button 
+                  onClick={handleInitiateRecall}
+                  disabled={recallPending || approvePending || recallStep !== 'idle'}
+                  className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50"
+                >
+                  {recallStep === 'approving' ? (
+                    "Approving USDC..."
+                  ) : recallStep === 'initiating' ? (
+                    "Initiating Recall..."
+                  ) : (
+                    "Avvia Recall"
+                  )}
                 </button>
               </div>
             )}
@@ -223,9 +254,9 @@ export default function VaultDetailPage() {
             <div className="bg-white rounded-xl shadow-sm border p-6">
               <h2 className="text-lg font-semibold mb-4">Owner</h2>
               <AddressDisplay
-              address={owner}
-              showAvatar
-              linkToEtherscan
+                address={owner}
+                showAvatar
+                linkToEtherscan
               />
               {isOwner && (
                 <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">

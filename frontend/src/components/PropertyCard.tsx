@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useProperty } from "@/hooks/useContracts";
 
 interface PropertyCardProps {
@@ -8,7 +9,35 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ propertyId, onOpenVault }: PropertyCardProps) {
-  const { data: property, isLoading } = useProperty(propertyId);
+  const { data: property, isLoading, refetch } = useProperty(propertyId);
+  const [verifying, setVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
+
+  const requestVerification = async () => {
+    setVerifying(true);
+    setVerifyError(null);
+    
+    try {
+      const response = await fetch("/api/verify-property", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ propertyId: propertyId.toString() }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Verification failed");
+      }
+      
+      // Refetch property data to update UI
+      await refetch();
+    } catch (error) {
+      setVerifyError(error instanceof Error ? error.message : "Verification failed");
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -63,6 +92,33 @@ export function PropertyCard({ propertyId, onOpenVault }: PropertyCardProps) {
         <p className="font-medium">{property.categoria}</p>
       </div>
 
+      {/* Request Verification Button - solo se non verificata */}
+      {!property.verified && (
+        <div className="mt-4">
+          <button
+            onClick={requestVerification}
+            disabled={verifying}
+            className="w-full rounded-md bg-yellow-500 px-4 py-2 text-sm font-medium text-white hover:bg-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {verifying ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Verifying TLS Proof...
+              </span>
+            ) : (
+              "Request Verification"
+            )}
+          </button>
+          {verifyError && (
+            <p className="mt-2 text-sm text-red-600">{verifyError}</p>
+          )}
+        </div>
+      )}
+
+      {/* Open Vault Button - solo se verificata */}
       {property.verified && onOpenVault && (
         <button
           onClick={() => onOpenVault(propertyId)}
