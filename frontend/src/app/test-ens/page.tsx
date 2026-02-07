@@ -68,9 +68,9 @@ export default function TestEnsPage() {
           {loadingName || loadingAddress ? (
             <p>⏳ Loading ENS data...</p>
           ) : ensName === "vitalik.eth" && resolvedAddress ? (
-            <p className="text-lg font-bold">✅ ENS Integration funziona!</p>
+            <p className="text-lg font-bold">✅ ENS Integration is working!</p>
           ) : (
-            <p>❌ ENS non funziona - controlla la configurazione</p>
+            <p>❌ ENS not working - check configuration</p>
           )}
         </div>
       </main>

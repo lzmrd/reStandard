@@ -12,7 +12,6 @@ import {
   formatEther,
 } from "@/hooks/useContracts";
 import Link from "next/link";
-import { CircleGateway } from "@/components/CircleGateway";
 
 export default function Dashboard() {
   const { address, isConnected } = useAccount();

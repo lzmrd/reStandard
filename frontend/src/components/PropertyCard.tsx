@@ -74,21 +74,21 @@ export function PropertyCard({ propertyId, onOpenVault }: PropertyCardProps) {
 
       <div className="mt-4 grid grid-cols-3 gap-4 text-sm">
         <div>
-          <p className="text-gray-500">Foglio</p>
+          <p className="text-gray-500">Sheet</p>
           <p className="font-medium">{property.foglio}</p>
         </div>
         <div>
-          <p className="text-gray-500">Particella</p>
+          <p className="text-gray-500">Parcel</p>
           <p className="font-medium">{property.particella}</p>
         </div>
         <div>
-          <p className="text-gray-500">Subalterno</p>
+          <p className="text-gray-500">Sub-unit</p>
           <p className="font-medium">{property.subalterno}</p>
         </div>
       </div>
 
       <div className="mt-4">
-        <p className="text-gray-500 text-sm">Categoria</p>
+        <p className="text-gray-500 text-sm">Category</p>
         <p className="font-medium">{property.categoria}</p>
       </div>
 

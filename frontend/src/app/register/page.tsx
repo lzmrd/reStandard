@@ -76,9 +76,9 @@ export default function RegisterPage() {
       <Header />
       
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-2">Registra Proprietà</h1>
+        <h1 className="text-3xl font-bold mb-2">Register Property</h1>
         <p className="text-gray-600 mb-8">
-          Registra il tuo immobile on-chain usando la prova TLS Notary
+          Register your property on-chain using TLS Notary proof
         </p>
 
         {/* Progress Steps */}
@@ -105,12 +105,12 @@ export default function RegisterPage() {
           {/* Step 1: Connect Wallet */}
           {step === "connect" && (
             <div className="text-center py-8">
-              <h2 className="text-xl font-semibold mb-4">Connetti il Wallet</h2>
+              <h2 className="text-xl font-semibold mb-4">Connect Wallet</h2>
               <p className="text-gray-600 mb-6">
-                Per registrare una proprietà, devi prima connettere il tuo wallet.
+                To register a property, you must first connect your wallet.
               </p>
               <p className="text-sm text-gray-500">
-                Usa il pulsante &quot;Connect Wallet&quot; in alto a destra
+                Use the &quot;Connect Wallet&quot; button in the top right corner
               </p>
             </div>
           )}
@@ -118,15 +118,15 @@ export default function RegisterPage() {
           {/* Step 2: Property Data */}
           {step === "data" && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Dati Catastali</h2>
+              <h2 className="text-xl font-semibold mb-4">Cadastral Data</h2>
               <p className="text-gray-600 mb-6">
-                Inserisci i dati catastali della tua proprietà
+                Enter your property&apos;s cadastral information
               </p>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Foglio
+                    Sheet (Foglio)
                   </label>
                   <input
                     type="text"
@@ -140,7 +140,7 @@ export default function RegisterPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Particella
+                    Parcel (Particella)
                   </label>
                   <input
                     type="text"
@@ -154,7 +154,7 @@ export default function RegisterPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Subalterno
+                    Sub-unit (Subalterno)
                   </label>
                   <input
                     type="text"
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Categoria
+                    Category
                   </label>
                   <input
                     type="text"
@@ -182,7 +182,7 @@ export default function RegisterPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Comune
+                    Municipality (Comune)
                   </label>
                   <input
                     type="text"
@@ -196,7 +196,7 @@ export default function RegisterPage() {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Provincia
+                    Province
                   </label>
                   <input
                     type="text"
@@ -215,7 +215,7 @@ export default function RegisterPage() {
                 disabled={!formData.foglio || !formData.particella || !formData.categoria || !formData.comune || !formData.provincia}
                 className="mt-6 w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
-                Continua
+                Continue
               </button>
             </div>
           )}
@@ -223,39 +223,39 @@ export default function RegisterPage() {
           {/* Step 3: Generate Proof */}
           {step === "proof" && (
             <div className="text-center py-4">
-              <h2 className="text-xl font-semibold mb-4">Genera Prova TLS Notary</h2>
+              <h2 className="text-xl font-semibold mb-4">Generate TLS Notary Proof</h2>
               <p className="text-gray-600 mb-6">
-                In produzione, qui si collegherebbe a sister.agenziaentrate.gov.it 
-                tramite TLS Notary per generare una prova crittografica della proprietà.
+                In production, this would connect to sister.agenziaentrate.gov.it
+                via TLS Notary to generate a cryptographic proof of ownership.
               </p>
               
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                 <p className="text-yellow-800 text-sm">
-                  <strong>Demo Mode:</strong> Per l&apos;hackathon, genereremo una proof mock.
+                  <strong>Demo Mode:</strong> For the hackathon, we will generate a mock proof.
                 </p>
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-                <p className="text-sm font-medium text-gray-700 mb-2">Riepilogo dati:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Data summary:</p>
                 <p className="text-sm text-gray-600">
-                  {formData.comune} ({formData.provincia}) - Foglio {formData.foglio}, 
-                  Particella {formData.particella}, Sub. {formData.subalterno || "N/A"}
+                  {formData.comune} ({formData.provincia}) - Sheet {formData.foglio},
+                  Parcel {formData.particella}, Sub. {formData.subalterno || "N/A"}
                 </p>
-                <p className="text-sm text-gray-600">Categoria: {formData.categoria}</p>
+                <p className="text-sm text-gray-600">Category: {formData.categoria}</p>
               </div>
               
               <button
                 onClick={handleGenerateProof}
                 className="w-full py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700"
               >
-                Genera Proof (Mock)
+                Generate Proof (Mock)
               </button>
               
               <button
                 onClick={() => setStep("data")}
                 className="mt-3 w-full py-2 text-gray-600 hover:text-gray-800"
               >
-                ← Modifica dati
+                ← Edit data
               </button>
             </div>
           )}
@@ -263,18 +263,18 @@ export default function RegisterPage() {
           {/* Step 4: Confirm & Submit */}
           {step === "confirm" && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">Conferma Registrazione</h2>
-              
+              <h2 className="text-xl font-semibold mb-4">Confirm Registration</h2>
+
               <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Proprietà:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Property:</p>
                 <p className="text-sm text-gray-600">
                   {formData.comune} ({formData.provincia})
                 </p>
                 <p className="text-sm text-gray-600">
-                  Foglio {formData.foglio}, Particella {formData.particella}, 
+                  Sheet {formData.foglio}, Parcel {formData.particella},
                   Sub. {formData.subalterno || "N/A"}
                 </p>
-                <p className="text-sm text-gray-600">Categoria: {formData.categoria}</p>
+                <p className="text-sm text-gray-600">Category: {formData.categoria}</p>
               </div>
               
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -287,7 +287,7 @@ export default function RegisterPage() {
               {error && (
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                   <p className="text-red-800 text-sm">
-                    Errore: {error.message}
+                    Error: {error.message}
                   </p>
                 </div>
               )}
@@ -297,17 +297,17 @@ export default function RegisterPage() {
                 disabled={isPending || isConfirming || !register}
                 className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400"
               >
-                {isPending ? "Firma in corso..." 
+                {isPending ? "Signing..."
                 : isConfirming
-                  ? "Conferma della transazione..."
-                  : "Resgistra On-Chain"
+                  ? "Confirming transaction..."
+                  : "Register On-Chain"
                 }
 
               </button>
               {isConfirming && (
                 <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <p className="text-blue-700 text-sm text-center">
-                    ⏳ Transazione inviata, attendo conferma on-chain...
+                    ⏳ Transaction submitted, waiting for on-chain confirmation...
                   </p>
                 </div>
               )}
@@ -317,7 +317,7 @@ export default function RegisterPage() {
                 disabled={isPending}
                 className="mt-3 w-full py-2 text-gray-600 hover:text-gray-800 disabled:text-gray-400"
               >
-                ← Indietro
+                ← Back
               </button>
             </div>
           )}
@@ -328,18 +328,18 @@ export default function RegisterPage() {
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">✓</span>
               </div>
-              <h2 className="text-xl font-semibold mb-2">Proprietà Registrata!</h2>
+              <h2 className="text-xl font-semibold mb-2">Property Registered!</h2>
               <p className="text-gray-600 mb-6">
-                La tua proprietà è stata registrata on-chain con successo.
+                Your property has been successfully registered on-chain.
               </p>
               <p className="text-sm text-gray-500 mb-6">
-                Nota: Un admin dovrà verificare la proof prima che tu possa aprire un vault.
+                Note: An admin will need to verify the proof before you can open a vault.
               </p>
               <a
                 href="/dashboard"
                 className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
               >
-                Vai alla Dashboard
+                Go to Dashboard
               </a>
             </div>
           )}

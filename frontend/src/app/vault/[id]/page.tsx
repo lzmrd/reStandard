@@ -93,10 +93,10 @@ export default function VaultDetailPage() {
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-8">
           <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
-            <h1 className="text-2xl font-bold mb-2">Vault Non Trovato</h1>
-            <p className="text-gray-600">Il vault #{String(params.id)} non esiste.</p>
+            <h1 className="text-2xl font-bold mb-2">Vault Not Found</h1>
+            <p className="text-gray-600">Vault #{String(params.id)} does not exist.</p>
             <a href="/dashboard" className="text-blue-600 hover:underline mt-4 inline-block">
-              Torna alla Dashboard
+              Back to Dashboard
             </a>
           </div>
         </main>
@@ -127,11 +127,11 @@ export default function VaultDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             {/* Vault Stats */}
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-lg font-semibold mb-4">Statistiche Vault</h2>
+              <h2 className="text-lg font-semibold mb-4">Vault Statistics</h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Debito Totale</p>
+                  <p className="text-sm text-gray-500">Total Debt</p>
                   <p className="text-2xl font-bold">{Number(debtFormatted).toLocaleString()} RESD</p>
                 </div>
 
@@ -149,9 +149,9 @@ export default function VaultDetailPage() {
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">Creato il</p>
+                  <p className="text-sm text-gray-500">Created on</p>
                   <p className="text-lg font-medium">
-                    {new Date(Number(createdAt) * 1000).toLocaleDateString("it-IT")}
+                    {new Date(Number(createdAt) * 1000).toLocaleDateString("en-US")}
                   </p>
                 </div>
               </div>
@@ -160,28 +160,28 @@ export default function VaultDetailPage() {
             {/* Property Info */}
             {property && (
               <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold mb-4">Proprietà Collaterale</h2>
+                <h2 className="text-lg font-semibold mb-4">Collateral Property</h2>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Ubicazione</p>
+                    <p className="text-sm text-gray-500">Location</p>
                     <p className="font-medium">{property.comune} ({property.provincia})</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Categoria</p>
+                    <p className="text-sm text-gray-500">Category</p>
                     <p className="font-medium">{property.categoria}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Identificativi Catastali</p>
+                    <p className="text-sm text-gray-500">Cadastral Identifiers</p>
                     <p className="font-medium">
-                      Foglio {property.foglio}, Part. {property.particella}, Sub. {property.subalterno || "N/A"}
+                      Sheet {property.foglio}, Parcel {property.particella}, Sub. {property.subalterno || "N/A"}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Valore Stimato</p>
+                    <p className="text-sm text-gray-500">Estimated Value</p>
                     <p className="font-medium text-green-600">~€170,000</p>
                   </div>
                 </div>
@@ -191,21 +191,21 @@ export default function VaultDetailPage() {
             {/* Recall Info (quando in recall) */}
             {status === 1 && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-yellow-800 mb-4">Recall in Corso</h2>
+                <h2 className="text-lg font-semibold text-yellow-800 mb-4">Recall in Progress</h2>
                 <p className="text-yellow-700 mb-4">
-                  Il vault è in fase di recall. Gli holder di RESD possono riscattare i loro token per USDC.
+                  The vault is in recall phase. RESD holders can redeem their tokens for USDC.
                 </p>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-white rounded-lg p-3">
-                    <p className="text-xs text-gray-500">Settimana 1</p>
+                    <p className="text-xs text-gray-500">Week 1</p>
                     <p className="font-bold text-green-600">1.02 USDC/RESD</p>
                   </div>
                   <div className="bg-white rounded-lg p-3">
-                    <p className="text-xs text-gray-500">Settimana 2-3</p>
+                    <p className="text-xs text-gray-500">Week 2-3</p>
                     <p className="font-bold text-yellow-600">1.01 USDC/RESD</p>
                   </div>
                   <div className="bg-white rounded-lg p-3">
-                    <p className="text-xs text-gray-500">Settimana 4</p>
+                    <p className="text-xs text-gray-500">Week 4</p>
                     <p className="font-bold text-gray-600">1.00 USDC/RESD</p>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function VaultDetailPage() {
             {/* Mint/Burn Form (solo owner e vault attivo) */}
             {isOwner && status === 0 && (
               <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold mb-4">Gestisci RESD</h2>
+                <h2 className="text-lg font-semibold mb-4">Manage RESD</h2>
                 <MintBurnForm vaultId={vaultId} currentDebt={debt} />
               </div>
             )}
@@ -228,10 +228,10 @@ export default function VaultDetailPage() {
               <div className="bg-white rounded-xl shadow-sm border p-6">
                 <h2 className="text-lg font-semibold mb-4">Recall</h2>
                 <p className="text-sm text-gray-600 mb-4">
-                  Avvia il recall per riacquistare tutti i RESD in circolazione.
+                  Initiate recall to buy back all RESD in circulation.
                 </p>
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <p className="text-xs text-gray-500">USDC Richiesti (debito + 2%)</p>
+                  <p className="text-xs text-gray-500">Required USDC (debt + 2%)</p>
                   <p className="font-bold text-lg">{Number(formatUnits(requiredUsdc, 6)).toLocaleString()} USDC</p>
                 </div>
                 <button 
@@ -244,7 +244,7 @@ export default function VaultDetailPage() {
                   ) : recallStep === 'initiating' ? (
                     "Initiating Recall..."
                   ) : (
-                    "Avvia Recall"
+                    "Initiate Recall"
                   )}
                 </button>
               </div>
@@ -260,7 +260,7 @@ export default function VaultDetailPage() {
               />
               {isOwner && (
                 <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                  Tu sei l&apos;owner
+                  You are the owner
                 </span>
               )}
             </div>
