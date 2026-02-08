@@ -17,6 +17,7 @@ import {
 } from "@/hooks/useContracts";
 import { formatUnits } from "viem";
 import { AddressDisplay } from "@/components/AddressDisplay";
+import { useDemo } from "@/contexts/DemoContext";
 
 export default function VaultDetailPage() {
   const params = useParams();
@@ -27,6 +28,7 @@ export default function VaultDetailPage() {
   const { initiateRecall, isPending: recallPending, isSuccess: recallSuccess } = useInitiateRecall();
   const { approve: approveUsdc, isPending: approvePending, isSuccess: approveSuccess } = useApproveUsdc();
   const [recallStep, setRecallStep] = useState<'idle' | 'approving' | 'initiating'>('idle');
+  const { markVaultClosed, isVaultClosedDemo } = useDemo();
 
   const { data: vault, isLoading: vaultLoading } = useVault(vaultId);
   const propertyId = vault ? vault.PropertyId : BigInt(0);
@@ -38,7 +40,7 @@ export default function VaultDetailPage() {
   // Derived values (only when vault is loaded)
   const owner = vault?.owner ?? "0x0000000000000000000000000000000000000000";
   const debt = vault?.debt ?? BigInt(0);
-  const status = vault?.status ?? 0;
+  const status = isVaultClosedDemo(vaultId) ? 2 : (vault?.status ?? 0);
   const createdAt = vault?.createdAt ?? BigInt(0);
 
   const isOwner = address?.toLowerCase() === owner.toLowerCase();
@@ -70,17 +72,21 @@ export default function VaultDetailPage() {
   }, [recallSuccess]);
 
   const statusLabels = ["Active", "In Recall", "Closed"];
-  const statusColors = ["bg-green-100 text-green-800", "bg-yellow-100 text-yellow-800", "bg-gray-100 text-gray-800"];
+  const statusColors = [
+    "bg-green-500/20 text-green-400 border border-green-500/30 shadow-[0_0_10px_rgba(16,185,129,0.3)]",
+    "bg-orange-500/20 text-orange-400 border border-orange-500/30 shadow-[0_0_10px_rgba(245,158,11,0.3)]",
+    "bg-white/10 text-white/50 border border-white/20"
+  ];
   const mockRatio = debt > BigInt(0) ? 18500 : 0;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/3 mb-4" />
-            <div className="h-64 bg-gray-200 rounded" />
+          <div>
+            <div className="h-8 shimmer rounded w-1/3 mb-4" />
+            <div className="h-64 shimmer rounded-xl" />
           </div>
         </main>
       </div>
@@ -89,13 +95,13 @@ export default function VaultDetailPage() {
 
   if (!vault || vault.owner === "0x0000000000000000000000000000000000000000") {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen">
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-8">
-          <div className="bg-white rounded-xl shadow-sm border p-8 text-center">
-            <h1 className="text-2xl font-bold mb-2">Vault Not Found</h1>
-            <p className="text-gray-600">Vault #{String(params.id)} does not exist.</p>
-            <a href="/dashboard" className="text-blue-600 hover:underline mt-4 inline-block">
+          <div className="bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/[0.08] p-8 text-center">
+            <h1 className="text-2xl font-bold mb-2 text-white">Vault Not Found</h1>
+            <p className="text-white/60">Vault #{String(params.id)} does not exist.</p>
+            <a href="/dashboard" className="text-cyan-400 hover:text-cyan-300 mt-4 inline-block transition-colors">
               Back to Dashboard
             </a>
           </div>
@@ -105,17 +111,20 @@ export default function VaultDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <Header />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <a href="/dashboard" className="text-blue-600 hover:underline text-sm mb-2 inline-block">
-              ← Dashboard
+            <a href="/dashboard" className="text-cyan-400 hover:text-cyan-300 text-sm mb-2 inline-flex items-center gap-1 transition-colors">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Dashboard
             </a>
-            <h1 className="text-3xl font-bold">Vault #{String(params.id)}</h1>
+            <h1 className="text-3xl font-bold text-white">Vault #{String(params.id)}</h1>
           </div>
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
             {statusLabels[status]}
@@ -126,31 +135,31 @@ export default function VaultDetailPage() {
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
             {/* Vault Stats */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-lg font-semibold mb-4">Vault Statistics</h2>
+            <div className="bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/[0.08] p-6">
+              <h2 className="text-lg font-semibold mb-4 text-white">Vault Statistics</h2>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-500">Total Debt</p>
-                  <p className="text-2xl font-bold">{Number(debtFormatted).toLocaleString()} RESD</p>
+                  <p className="text-sm text-white/50">Total Debt</p>
+                  <p className="text-2xl font-bold text-white">{Number(debtFormatted).toLocaleString()} RESD</p>
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">Collateral Ratio</p>
+                  <p className="text-sm text-white/50">Collateral Ratio</p>
                   <div className="flex items-center gap-2">
-                    <p className="text-2xl font-bold">{(mockRatio / 100).toFixed(1)}%</p>
+                    <p className="text-2xl font-bold text-white">{(mockRatio / 100).toFixed(1)}%</p>
                     <HealthIndicator ratio={mockRatio} />
                   </div>
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">Property ID</p>
-                  <p className="text-lg font-medium">#{propertyId.toString()}</p>
+                  <p className="text-sm text-white/50">Property ID</p>
+                  <p className="text-lg font-medium text-white">#{propertyId.toString()}</p>
                 </div>
 
                 <div>
-                  <p className="text-sm text-gray-500">Created on</p>
-                  <p className="text-lg font-medium">
+                  <p className="text-sm text-white/50">Created on</p>
+                  <p className="text-lg font-medium text-white">
                     {new Date(Number(createdAt) * 1000).toLocaleDateString("en-US")}
                   </p>
                 </div>
@@ -159,29 +168,29 @@ export default function VaultDetailPage() {
 
             {/* Property Info */}
             {property && (
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold mb-4">Collateral Property</h2>
+              <div className="bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/[0.08] p-6">
+                <h2 className="text-lg font-semibold mb-4 text-white">Collateral Property</h2>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-500">Location</p>
-                    <p className="font-medium">{property.comune} ({property.provincia})</p>
+                    <p className="text-sm text-white/50">Location</p>
+                    <p className="font-medium text-white">{property.comune} ({property.provincia})</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Category</p>
-                    <p className="font-medium">{property.categoria}</p>
+                    <p className="text-sm text-white/50">Category</p>
+                    <p className="font-medium text-white">{property.categoria}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Cadastral Identifiers</p>
-                    <p className="font-medium">
+                    <p className="text-sm text-white/50">Cadastral Identifiers</p>
+                    <p className="font-medium text-white">
                       Sheet {property.foglio}, Parcel {property.particella}, Sub. {property.subalterno || "N/A"}
                     </p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-500">Estimated Value</p>
+                    <p className="text-sm text-white/50">Estimated Value</p>
                     <p className="font-medium text-green-600">~€170,000</p>
                   </div>
                 </div>
@@ -190,25 +199,43 @@ export default function VaultDetailPage() {
 
             {/* Recall Info (quando in recall) */}
             {status === 1 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                <h2 className="text-lg font-semibold text-yellow-800 mb-4">Recall in Progress</h2>
-                <p className="text-yellow-700 mb-4">
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-6">
+                <h2 className="text-lg font-semibold text-orange-400 mb-4">Recall in Progress</h2>
+                <p className="text-orange-300/80 mb-4">
                   The vault is in recall phase. RESD holders can redeem their tokens for USDC.
                 </p>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-white rounded-lg p-3">
-                    <p className="text-xs text-gray-500">Week 1</p>
-                    <p className="font-bold text-green-600">1.02 USDC/RESD</p>
+                  <div className="bg-white/[0.05] rounded-lg p-3 border border-white/[0.08]">
+                    <p className="text-xs text-white/50">Week 1</p>
+                    <p className="font-bold text-green-400">1.02 USDC/RESD</p>
                   </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <p className="text-xs text-gray-500">Week 2-3</p>
-                    <p className="font-bold text-yellow-600">1.01 USDC/RESD</p>
+                  <div className="bg-white/[0.05] rounded-lg p-3 border border-white/[0.08]">
+                    <p className="text-xs text-white/50">Week 2-3</p>
+                    <p className="font-bold text-orange-400">1.01 USDC/RESD</p>
                   </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <p className="text-xs text-gray-500">Week 4</p>
-                    <p className="font-bold text-gray-600">1.00 USDC/RESD</p>
+                  <div className="bg-white/[0.05] rounded-lg p-3 border border-white/[0.08]">
+                    <p className="text-xs text-white/50">Week 4</p>
+                    <p className="font-bold text-white/60">1.00 USDC/RESD</p>
                   </div>
                 </div>
+
+                {/* Demo Mode Button */}
+                {isOwner && (
+                  <div className="mt-6 pt-4 border-t border-orange-500/20">
+                    <p className="text-xs text-orange-400/60 mb-2 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Demo Mode Only
+                    </p>
+                    <button
+                      onClick={() => markVaultClosed(vaultId)}
+                      className="w-full py-2 bg-white/[0.05] border border-white/[0.1] text-white/70 rounded-lg text-sm font-medium hover:bg-white/[0.1] hover:text-white transition-all duration-300"
+                    >
+                      Force Close Recall 
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -217,27 +244,27 @@ export default function VaultDetailPage() {
           <div className="space-y-6">
             {/* Mint/Burn Form (solo owner e vault attivo) */}
             {isOwner && status === 0 && (
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold mb-4">Manage RESD</h2>
+              <div className="bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/[0.08] p-6">
+                <h2 className="text-lg font-semibold mb-4 text-white">Manage RESD</h2>
                 <MintBurnForm vaultId={vaultId} currentDebt={debt} />
               </div>
             )}
 
             {/* Recall Button (solo owner e vault attivo con debt > 0) */}
             {isOwner && status === 0 && debt > BigInt(0) && (
-              <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h2 className="text-lg font-semibold mb-4">Recall</h2>
-                <p className="text-sm text-gray-600 mb-4">
+              <div className="bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/[0.08] p-6">
+                <h2 className="text-lg font-semibold mb-4 text-white">Recall</h2>
+                <p className="text-sm text-white/60 mb-4">
                   Initiate recall to buy back all RESD in circulation.
                 </p>
-                <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                  <p className="text-xs text-gray-500">Required USDC (debt + 2%)</p>
-                  <p className="font-bold text-lg">{Number(formatUnits(requiredUsdc, 6)).toLocaleString()} USDC</p>
+                <div className="bg-white/[0.03] border border-white/[0.08] rounded-lg p-3 mb-4">
+                  <p className="text-xs text-white/50">Required USDC (debt + 2%)</p>
+                  <p className="font-bold text-lg text-white">{Number(formatUnits(requiredUsdc, 6)).toLocaleString()} USDC</p>
                 </div>
-                <button 
+                <button
                   onClick={handleInitiateRecall}
                   disabled={recallPending || approvePending || recallStep !== 'idle'}
-                  className="w-full py-3 bg-orange-600 text-white rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50"
+                  className="w-full py-3 bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg font-medium hover:shadow-[0_0_25px_rgba(245,158,11,0.4)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:transform-none"
                 >
                   {recallStep === 'approving' ? (
                     "Approving USDC..."
@@ -251,15 +278,15 @@ export default function VaultDetailPage() {
             )}
 
             {/* Owner Info */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h2 className="text-lg font-semibold mb-4">Owner</h2>
+            <div className="bg-white/[0.03] backdrop-blur-xl rounded-xl border border-white/[0.08] p-6">
+              <h2 className="text-lg font-semibold mb-4 text-white">Owner</h2>
               <AddressDisplay
                 address={owner}
                 showAvatar
                 linkToEtherscan
               />
               {isOwner && (
-                <span className="inline-block mt-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
+                <span className="inline-block mt-2 px-2 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs rounded-full">
                   You are the owner
                 </span>
               )}

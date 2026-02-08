@@ -69,9 +69,9 @@ export function EnsInput({
             )}
 
             {/* Resolved address */}
-            {isEnsName && resolvedAddress && ( 
-                <p className="text-xs text-gray-500 mt-1 font-mono">
-                  → {resolvedAddress.slice(0, 10)}...{resolvedAddress.slice(-8)}
+            {isEnsName && resolvedAddress && (
+                <p className="text-xs text-white/50 mt-1 font-mono">
+                  {resolvedAddress.slice(0, 10)}...{resolvedAddress.slice(-8)}
                 </p>
             )}
 

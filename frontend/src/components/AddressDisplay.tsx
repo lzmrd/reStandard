@@ -16,33 +16,33 @@ export function AddressDisplay({
     className = "",
     linkToEtherscan = false
 }: AddressDisplayProps) {
-    const  { ensName , ensAvatar, isLoading } = useEnsForAddress(address);
+    const { ensName, isLoading } = useEnsForAddress(address);
 
     const displayText = ensName || truncateAddress(address);
 
     const content = (
         <span className={`inline-flex items-center gap-2 ${className}`}>
-            { showAvatar && ensAvatar && (
-                <span className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-purple-500" />
+            { showAvatar && (
+                <span className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.4)]" />
             )}
-            <span className={ensName ? "font-medium" : "font-mono text-sm"}>
+            <span className={`${ensName ? "font-medium text-white" : "font-mono text-sm text-white/80"}`}>
                 {isLoading ? truncateAddress(address): displayText}
             </span>
             {ensName && (
-                <span className="text-xs text-gray-400 font mono">
+                <span className="text-xs text-white/40 font-mono">
                     ({truncateAddress(address)})
                 </span>
             )}
         </span>
     );
-    
+
     if(linkToEtherscan){
         return (
             <a
               href={`https://etherscan.io/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
+              className="hover:text-cyan-400 transition-colors duration-200"
             >
                 {content}
             </a>

@@ -1,4 +1,3 @@
-// frontend/src/components/Header.tsx
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -7,32 +6,31 @@ import { useAccount } from "wagmi";
 import { useEnsForAddress } from "@/hooks/useEns";
 
 export function Header() {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { ensName } = useEnsForAddress(address);
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="border-b border-white/[0.08] bg-white/[0.02] backdrop-blur-xl sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-gray-900">
+          <Link href="/" className="text-xl font-bold gradient-text hover:scale-105 transition-transform">
             reStandard
           </Link>
-          
+
           <nav className="hidden md:flex items-center gap-6">
-            <Link 
+            <Link
               href="/dashboard"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900"
+              className="link-underline text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
             >
               Dashboard
             </Link>
             <Link
               href="/register"
-              className="text-sm font-medium text-gray-600 hover:text-gray-900"
+              className="link-underline text-sm font-medium text-white/70 hover:text-white transition-colors duration-200"
             >
               Register
             </Link>
-            
-            {/* Custom Connect Button con ENS */}
+
             <ConnectButton.Custom>
               {({ account, chain, openAccountModal, openChainModal, openConnectModal, mounted }) => {
                 const ready = mounted;
@@ -54,7 +52,7 @@ export function Header() {
                         return (
                           <button
                             onClick={openConnectModal}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                            className="btn-shine px-4 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg font-medium hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] hover:-translate-y-0.5 transition-all duration-300"
                           >
                             Connect Wallet
                           </button>
@@ -63,10 +61,9 @@ export function Header() {
 
                       return (
                         <div className="flex items-center gap-2">
-                          {/* Chain Button */}
                           <button
                             onClick={openChainModal}
-                            className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+                            className="flex items-center gap-2 px-3 py-2 bg-white/[0.05] rounded-lg hover:bg-white/[0.1] border border-white/[0.08] hover:border-white/[0.15] transition-all duration-200"
                           >
                             {chain.hasIcon && chain.iconUrl && (
                               <img
@@ -75,16 +72,15 @@ export function Header() {
                                 className="w-5 h-5 rounded-full"
                               />
                             )}
-                            <span className="text-sm font-medium">{chain.name}</span>
+                            <span className="text-sm font-medium text-white/80">{chain.name}</span>
                           </button>
 
-                          {/* Account Button - mostra ENS se disponibile */}
                           <button
                             onClick={openAccountModal}
-                            className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+                            className="group flex items-center gap-2 px-3 py-2 bg-white/[0.05] rounded-lg hover:bg-white/[0.1] border border-white/[0.08] hover:border-cyan-500/30 transition-all duration-200"
                           >
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
-                            <span className="text-sm font-medium">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                            <span className="text-sm font-medium text-white/80 group-hover:text-cyan-400 transition-colors">
                               {ensName || account.displayName}
                             </span>
                           </button>
@@ -96,7 +92,7 @@ export function Header() {
               }}
             </ConnectButton.Custom>
           </nav>
-          
+
           {/* Mobile */}
           <div className="md:hidden">
             <ConnectButton.Custom>
@@ -108,7 +104,7 @@ export function Header() {
                   return (
                     <button
                       onClick={openConnectModal}
-                      className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium"
+                      className="btn-shine px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg text-sm font-medium hover:shadow-[0_0_15px_rgba(0,212,255,0.4)] transition-all duration-300"
                     >
                       Connect
                     </button>
@@ -118,10 +114,10 @@ export function Header() {
                 return (
                   <button
                     onClick={openAccountModal}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.05] rounded-lg border border-white/[0.08] hover:border-cyan-500/30 transition-all duration-200"
                   >
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <span className="text-sm font-medium">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
+                    <span className="text-sm font-medium text-white/80">
                       {ensName || account.displayName}
                     </span>
                   </button>

@@ -262,6 +262,15 @@ contract VaultManager is Ownable, ReentrancyGuard {
         if (block.timestamp < recall.deadline) revert RecallNotExpired();
 
         _finalizeRecallInternal(vaultId);
+    }
+
+    /// @notice [ADMIN/DEMO] Forza la chiusura del recall senza aspettare la deadline
+    /// @param vaultId ID del vault
+    function forceCloseRecall(uint256 vaultId) external onlyOwner nonReentrant {
+        Types.Vault storage vault = vaults[vaultId];
+        if (vault.status != Types.VaultStatus.InRecall) revert RecallNotActive();
+
+        _finalizeRecallInternal(vaultId);
     } 
 
     /// @notice Logica interna di finalizzazione recall
